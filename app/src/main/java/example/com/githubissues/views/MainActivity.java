@@ -1,7 +1,6 @@
 package example.com.githubissues.views;
 
 import android.app.ProgressDialog;
-import android.os.PersistableBundle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -18,7 +17,7 @@ import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 
 import java.util.List;
 
-import adapters.DataAdapter;
+import example.com.githubissues.adapters.DataAdapter;
 import example.com.githubissues.R;
 import example.com.githubissues.models.Issue;
 import example.com.githubissues.retrofit.GithubApiService;

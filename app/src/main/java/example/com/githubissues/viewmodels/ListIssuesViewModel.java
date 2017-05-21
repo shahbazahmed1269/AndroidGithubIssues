@@ -6,7 +6,6 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import java.util.List;
 
@@ -22,7 +21,6 @@ import retrofit2.Response;
  */
 
 public class ListIssuesViewModel extends AndroidViewModel {
-    private final String TAG = ListIssuesViewModel.class.getName();
     MutableLiveData<List<Issue>> issues;
     MutableLiveData<Throwable> error;
     IssueRepository repository;
@@ -54,14 +52,11 @@ public class ListIssuesViewModel extends AndroidViewModel {
                 @Override
                 public void onResponse(Call<List<Issue>> call, Response<List<Issue>> response) {
                     List<Issue> issues = response.body();
-                    Log.d(TAG, "issues size: " + issues.size());
                     setIssues(issues);
                 }
 
                 @Override
                 public void onFailure(Call<List<Issue>> call, Throwable t) {
-                    // TODO: Handle error in retrieving issues`
-                    Log.e(TAG, "Error occured: " + t.toString());
                     setError(t);
                 }
             });

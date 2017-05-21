@@ -1,6 +1,7 @@
 package example.com.githubissues.adapters;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,13 +21,14 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.Holder> {
     private final LayoutInflater mInflator;
     private List<Issue> mIssueList;
 
-    public DataAdapter(LayoutInflater inflator){
-        mInflator=inflator;
-        mIssueList=new ArrayList<>();
+    public DataAdapter(LayoutInflater inflator) {
+        mInflator = inflator;
+        mIssueList = new ArrayList<>();
     }
+
     @Override
     public Holder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new Holder(mInflator.inflate(R.layout.issue_row,parent,false));
+        return new Holder(mInflator.inflate(R.layout.issue_row, parent, false));
     }
 
     @Override
@@ -43,7 +45,8 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.Holder> {
     }
 
     public void addIssues(List<Issue> issues) {
-        mIssueList=issues;
+        mIssueList.clear();
+        mIssueList.addAll(issues);
         notifyDataSetChanged();
     }
 

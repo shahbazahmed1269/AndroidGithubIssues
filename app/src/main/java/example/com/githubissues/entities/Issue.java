@@ -1,4 +1,4 @@
-package example.com.githubissues.models;
+package example.com.githubissues.entities;
 
 /**
  * Created by shahbaz on 14/05/17.

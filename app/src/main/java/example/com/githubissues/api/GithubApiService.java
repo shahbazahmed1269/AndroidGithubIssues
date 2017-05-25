@@ -1,9 +1,8 @@
-package example.com.githubissues.retrofit;
+package example.com.githubissues.api;
 
 import java.util.List;
 
-import example.com.githubissues.models.Issue;
-import io.reactivex.Observable;
+import example.com.githubissues.entities.Issue;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;

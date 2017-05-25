@@ -1,12 +1,16 @@
 package example.com.githubissues.repositories;
 
-import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.MutableLiveData;
 
 import java.util.List;
 
-import example.com.githubissues.models.Issue;
-import example.com.githubissues.retrofit.GithubApiService;
+import example.com.githubissues.entities.ApiResponse;
+import example.com.githubissues.entities.Issue;
+import example.com.githubissues.api.GithubApiService;
 import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -17,19 +21,31 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class IssueRepositoryImpl implements IssueRepository {
 
     public static final String BASE_URL = "https://api.github.com/";
-    private GithubApiService mGithubApiService;
+    private GithubApiService githubApiService;
 
     public IssueRepositoryImpl() {
         Retrofit retrofit = new Retrofit.Builder()
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
                 .baseUrl(BASE_URL)
                 .build();
-        mGithubApiService = retrofit.create(GithubApiService.class);
+        githubApiService = retrofit.create(GithubApiService.class);
     }
 
-    @Override
-    public Call<List<Issue>> getIssues(String owner, String repo) {
-        return mGithubApiService.getIssues(owner, repo);
+    public LiveData<ApiResponse> getIssues(String owner, String repo) {
+        final MutableLiveData<ApiResponse> liveData = new MutableLiveData<>();
+        Call<List<Issue>> call = githubApiService.getIssues(owner, repo);
+        call.enqueue(new Callback<List<Issue>>() {
+            @Override
+            public void onResponse(Call<List<Issue>> call, Response<List<Issue>> response) {
+                liveData.setValue(new ApiResponse(response.body()));
+            }
+
+            @Override
+            public void onFailure(Call<List<Issue>> call, Throwable t) {
+                liveData.setValue(new ApiResponse(t));
+            }
+        });
+        return liveData;
     }
+
 }

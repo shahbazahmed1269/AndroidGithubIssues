@@ -1,7 +1,6 @@
 package example.com.githubissues.adapters;
 
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import example.com.githubissues.R;
-import example.com.githubissues.models.Issue;
+import example.com.githubissues.entities.Issue;
 
 /**
  * Created by shahbaz on 14/05/17.
@@ -47,6 +46,11 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.Holder> {
     public void addIssues(List<Issue> issues) {
         mIssueList.clear();
         mIssueList.addAll(issues);
+        notifyDataSetChanged();
+    }
+
+    public void clearIssues() {
+        mIssueList.clear();
         notifyDataSetChanged();
     }
 

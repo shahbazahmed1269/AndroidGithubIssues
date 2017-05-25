@@ -1,4 +1,4 @@
-package example.com.githubissues.views;
+package example.com.githubissues.ui;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -11,17 +11,19 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.List;
 
 import example.com.githubissues.adapters.DataAdapter;
 import example.com.githubissues.R;
-import example.com.githubissues.models.Issue;
+import example.com.githubissues.entities.Issue;
 import example.com.githubissues.viewmodels.ListIssuesViewModel;
 
 public class MainActivity extends LifecycleActivity {
@@ -32,7 +34,6 @@ public class MainActivity extends LifecycleActivity {
     private ProgressDialog mDialog;
     private DataAdapter mAdapter;
     private EditText mSearchEditText;
-    private Button mSearchBtn;
     private ListIssuesViewModel viewModel;
 
 
@@ -42,12 +43,38 @@ public class MainActivity extends LifecycleActivity {
         setContentView(R.layout.activity_main);
         viewModel = ViewModelProviders.of(this).get(ListIssuesViewModel.class);
         setupView();
-        // Handle changes emitted by LiveData
-        viewModel.getIssues().observe(this, issues -> {
-            handleResponse(issues);
+
+        mSearchEditText.setOnEditorActionListener((TextView v, int actionId, KeyEvent event) -> {
+            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                String repo = mSearchEditText.getText().toString();
+                if (repo.length() > 0) {
+                    String[] query = repo.split("/");
+                    if (query.length == 2) {
+                        hideSoftKeyboard(MainActivity.this, v);
+                        setProgress(true);
+                        viewModel.loadIssues(query[0], query[1]);
+                    } else {
+                        handleError(new Exception(
+                                "Error wrong format of input. Required format owner/repository_name")
+                        );
+                    }
+                } else {
+                    handleError(new Exception(
+                            "Repository name empty. Required format owner/repository_name")
+                    );
+                }
+                return true;
+            }
+            return false;
         });
-        viewModel.getError().observe(this, err -> {
-            handleError(err);
+
+        // Handle changes emitted by LiveData
+        viewModel.getRes().observe(this, apiResponse -> {
+            if (apiResponse.getError() != null) {
+                handleError(apiResponse.getError());
+            } else {
+                handleResponse(apiResponse.getIssues());
+            }
         });
     }
 
@@ -59,7 +86,6 @@ public class MainActivity extends LifecycleActivity {
     private void setupView() {
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         mSearchEditText = (EditText) findViewById(R.id.et_search);
-        mSearchBtn = (Button) findViewById(R.id.search_btn);
 
         // Setup Progress Dialog to show loading state
         mDialog = new ProgressDialog(MainActivity.this);
@@ -82,13 +108,6 @@ public class MainActivity extends LifecycleActivity {
         mRecyclerView.addItemDecoration(mDividerItemDecoration);
         mAdapter = new DataAdapter(getLayoutInflater());
         mRecyclerView.setAdapter(mAdapter);
-
-        mSearchBtn.setOnClickListener((View v) -> {
-            String repo = mSearchEditText.getText().toString();
-            hideSoftKeyboard(MainActivity.this, v);
-            setProgress(true);
-            viewModel.loadIssues(repo);
-        });
     }
 
     private void hideSoftKeyboard(Activity activity, View view) {
@@ -100,8 +119,16 @@ public class MainActivity extends LifecycleActivity {
 
     private void handleResponse(List<Issue> issues) {
         setProgress(false);
-        mAdapter.addIssues(issues);
-        mRecyclerView.setAdapter(mAdapter);
+        if (issues != null && issues.size() > 0) {
+            mAdapter.addIssues(issues);
+        } else {
+            mAdapter.clearIssues();
+            Toast.makeText(
+                    this,
+                    "No issues found for the searched repository.",
+                    Toast.LENGTH_SHORT
+            ).show();
+        }
     }
 
     private void handleError(Throwable error) {
@@ -112,9 +139,9 @@ public class MainActivity extends LifecycleActivity {
 
     public void setProgress(boolean flag) {
         if (flag) {
-            MainActivity.this.runOnUiThread(() -> mDialog.show());
+            mDialog.show();
         } else {
-            MainActivity.this.runOnUiThread(() -> mDialog.dismiss());
+            mDialog.dismiss();
         }
     }
 

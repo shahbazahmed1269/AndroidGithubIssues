@@ -1,15 +1,14 @@
 package example.com.githubissues.repositories;
 
-import java.util.List;
+import android.arch.lifecycle.LiveData;
 
-import example.com.githubissues.models.Issue;
-import io.reactivex.Observable;
-import retrofit2.Call;
+import example.com.githubissues.entities.ApiResponse;
 
 /**
- * Created by James on 5/21/2017.
+ * Created by James on 5/25/2017.
  */
 
 public interface IssueRepository {
-    Call<List<Issue>> getIssues(String owner, String repo);
+
+    LiveData<ApiResponse> getIssues(String owner, String repo);
 }

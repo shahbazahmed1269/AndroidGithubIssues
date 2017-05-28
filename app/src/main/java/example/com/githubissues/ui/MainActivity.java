@@ -34,14 +34,14 @@ public class MainActivity extends LifecycleActivity {
     private ProgressDialog mDialog;
     private DataAdapter mAdapter;
     private EditText mSearchEditText;
-    private ListIssuesViewModel viewModel;
+    private ListIssuesViewModel mViewModel;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        viewModel = ViewModelProviders.of(this).get(ListIssuesViewModel.class);
+        mViewModel = ViewModelProviders.of(this).get(ListIssuesViewModel.class);
         setupView();
 
         mSearchEditText.setOnEditorActionListener((TextView v, int actionId, KeyEvent event) -> {
@@ -52,7 +52,7 @@ public class MainActivity extends LifecycleActivity {
                     if (query.length == 2) {
                         hideSoftKeyboard(MainActivity.this, v);
                         setProgress(true);
-                        viewModel.loadIssues(query[0], query[1]);
+                        mViewModel.loadIssues(query[0], query[1]);
                     } else {
                         handleError(new Exception(
                                 "Error wrong format of input. Required format owner/repository_name")
@@ -69,7 +69,7 @@ public class MainActivity extends LifecycleActivity {
         });
 
         // Handle changes emitted by LiveData
-        viewModel.getRes().observe(this, apiResponse -> {
+        mViewModel.getApiResponse().observe(this, apiResponse -> {
             if (apiResponse.getError() != null) {
                 handleError(apiResponse.getError());
             } else {
@@ -133,6 +133,7 @@ public class MainActivity extends LifecycleActivity {
 
     private void handleError(Throwable error) {
         setProgress(false);
+        mAdapter.clearIssues();
         Log.e(TAG, "error occured: " + error.toString());
         Toast.makeText(this, "Oops! Some error occured.", Toast.LENGTH_SHORT).show();
     }

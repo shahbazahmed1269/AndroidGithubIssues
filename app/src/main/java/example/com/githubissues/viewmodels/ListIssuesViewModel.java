@@ -15,23 +15,25 @@ import example.com.githubissues.repositories.IssueRepositoryImpl;
 
 public class ListIssuesViewModel extends ViewModel {
 
-    private MediatorLiveData<ApiResponse> res;
-    private IssueRepository repository;
+    private MediatorLiveData<ApiResponse> mApiResponse;
+    private IssueRepository mIssueRepository;
 
     public ListIssuesViewModel() {
-        res = new MediatorLiveData<>();
-        repository = new IssueRepositoryImpl();
+        mApiResponse = new MediatorLiveData<>();
+        mIssueRepository = new IssueRepositoryImpl();
     }
 
     @NonNull
-    public LiveData<ApiResponse> getRes() {
-        return res;
+    public LiveData<ApiResponse> getApiResponse() {
+        return mApiResponse;
     }
 
-
     public LiveData<ApiResponse> loadIssues(@NonNull String user, String repo) {
-        res.addSource(repository.getIssues(user, repo), apiResponse -> res.setValue(apiResponse));
-        return res;
+        mApiResponse.addSource(
+                mIssueRepository.getIssues(user, repo),
+                apiResponse -> mApiResponse.setValue(apiResponse)
+        );
+        return mApiResponse;
     }
 
 }

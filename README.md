@@ -13,7 +13,4 @@ View (Activity or Fragment) uses LiveData to observe data changes and react acco
 
 **Repository** class abstracts the underlying datastores implementation (be it SQLite based or fetching from remote API or both) from the rest of the code. This way the code is decoupled from the underlying datastore implementations.
 
-<img src="https://raw.githubusercontent.com/shahbazahmed1269/AndroidGithubIssues/master/art/github-issues-shot-1.png" alt="github-issues-shot-1" style="width: 480px;"/>
-
-
-
+<img src="https://raw.githubusercontent.com/shahbazahmed1269/AndroidGithubIssues/master/art/github-issues-shot-1.png" alt="github-issues-shot-1" width="480"/>

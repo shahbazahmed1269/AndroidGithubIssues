@@ -31,7 +31,7 @@ android {
 ext {
     arch_version = '1.0.0-alpha1'
     support_lib_version = '25.3.1'
-
+    dagger_version = '2.11'
 }
 
 dependencies {
@@ -48,4 +48,6 @@ dependencies {
     annotationProcessor "android.arch.lifecycle:compiler:$arch_version"
     compile 'com.squareup.retrofit2:retrofit:2.1.0'
     compile 'com.squareup.retrofit2:converter-gson:2.1.0'
+    compile "com.google.dagger:dagger:$dagger_version"
+    annotationProcessor "com.google.dagger:dagger-compiler:$dagger_version"
 }

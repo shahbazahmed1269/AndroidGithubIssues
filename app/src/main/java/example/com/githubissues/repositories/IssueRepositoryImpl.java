@@ -5,30 +5,25 @@ import android.arch.lifecycle.MutableLiveData;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 import example.com.githubissues.entities.ApiResponse;
 import example.com.githubissues.entities.Issue;
 import example.com.githubissues.api.GithubApiService;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Created by James on 5/21/2017.
  */
 
 public class IssueRepositoryImpl implements IssueRepository {
+    @Inject
+    GithubApiService mApiService;
 
-    public static final String BASE_URL = "https://api.github.com/";
-    private GithubApiService mApiService;
-
+    @Inject
     public IssueRepositoryImpl() {
-        Retrofit retrofit = new Retrofit.Builder()
-                .addConverterFactory(GsonConverterFactory.create())
-                .baseUrl(BASE_URL)
-                .build();
-        mApiService = retrofit.create(GithubApiService.class);
     }
 
     public LiveData<ApiResponse> getIssues(String owner, String repo) {

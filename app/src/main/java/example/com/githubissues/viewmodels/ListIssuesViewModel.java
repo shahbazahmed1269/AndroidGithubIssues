@@ -5,9 +5,10 @@ import android.arch.lifecycle.MediatorLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.support.annotation.NonNull;
 
+import javax.inject.Inject;
+
 import example.com.githubissues.entities.ApiResponse;
 import example.com.githubissues.repositories.IssueRepository;
-import example.com.githubissues.repositories.IssueRepositoryImpl;
 
 /**
  * Created by James on 5/21/2017.
@@ -18,9 +19,10 @@ public class ListIssuesViewModel extends ViewModel {
     private MediatorLiveData<ApiResponse> mApiResponse;
     private IssueRepository mIssueRepository;
 
-    public ListIssuesViewModel() {
+    @Inject
+    public ListIssuesViewModel(IssueRepository issueRepositoryry) {
         mApiResponse = new MediatorLiveData<>();
-        mIssueRepository = new IssueRepositoryImpl();
+        mIssueRepository = issueRepositoryry;
     }
 
     @NonNull

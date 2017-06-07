@@ -3,6 +3,7 @@ package example.com.githubissues.ui;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.arch.lifecycle.LifecycleActivity;
+import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.os.Bundle;
@@ -21,6 +22,9 @@ import android.widget.Toast;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
+import example.com.githubissues.IssuesApplication;
 import example.com.githubissues.adapters.DataAdapter;
 import example.com.githubissues.R;
 import example.com.githubissues.entities.Issue;
@@ -28,20 +32,23 @@ import example.com.githubissues.viewmodels.ListIssuesViewModel;
 
 public class MainActivity extends LifecycleActivity {
 
-    private final String TAG = MainActivity.class.getName();
+    @Inject
+    ViewModelProvider.Factory mViewModelFactory;
 
+    private final String TAG = MainActivity.class.getName();
     private RecyclerView mRecyclerView;
     private ProgressDialog mDialog;
     private DataAdapter mAdapter;
     private EditText mSearchEditText;
     private ListIssuesViewModel mViewModel;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mViewModel = ViewModelProviders.of(this).get(ListIssuesViewModel.class);
+        // Required by Dagger2 for field injection
+        ((IssuesApplication) getApplication()).getAppComponent().inject(this);
+        mViewModel = ViewModelProviders.of(this, mViewModelFactory).get(ListIssuesViewModel.class);
         setupView();
 
         mSearchEditText.setOnEditorActionListener((TextView v, int actionId, KeyEvent event) -> {

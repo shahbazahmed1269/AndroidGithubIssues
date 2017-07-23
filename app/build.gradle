@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    buildToolsVersion "25.0.3"
     defaultConfig {
         applicationId "example.com.githubissues"
         minSdkVersion 19
@@ -29,9 +29,9 @@ android {
 }
 
 ext {
-    arch_version = '1.0.0-alpha1'
-    support_lib_version = '25.3.1'
+    arch_version = '1.0.0-alpha5'
     dagger_version = '2.11'
+    support_lib_version = '25.4.0'
 }
 
 dependencies {

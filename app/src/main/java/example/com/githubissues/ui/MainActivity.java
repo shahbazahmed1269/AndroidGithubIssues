@@ -6,6 +6,7 @@ import android.arch.lifecycle.LifecycleActivity;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -26,7 +27,7 @@ import example.com.githubissues.R;
 import example.com.githubissues.entities.Issue;
 import example.com.githubissues.viewmodels.ListIssuesViewModel;
 
-public class MainActivity extends LifecycleActivity {
+public class MainActivity extends AppCompatActivity {
 
     private final String TAG = MainActivity.class.getName();
 

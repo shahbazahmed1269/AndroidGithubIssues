@@ -48,7 +48,7 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile "com.android.support:recyclerview-v7:$support_lib_version"
 
-    compile "android.arch.lifecycle:runtime:$arch_version"
+    compile 'android.arch.lifecycle:runtime:1.0.0'
     compile "android.arch.lifecycle:extensions:$arch_version"
     annotationProcessor "android.arch.lifecycle:compiler:$arch_version"
     compile 'com.squareup.retrofit2:retrofit:2.1.0'

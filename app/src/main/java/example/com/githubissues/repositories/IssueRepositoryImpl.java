@@ -20,7 +20,7 @@ import retrofit2.Response;
 
 public class IssueRepositoryImpl implements IssueRepository {
     @Inject
-    GithubApiService mApiService;
+    GithubApiService apiService;
 
     @Inject
     public IssueRepositoryImpl() {
@@ -28,7 +28,7 @@ public class IssueRepositoryImpl implements IssueRepository {
 
     public LiveData<ApiResponse> getIssues(String owner, String repo) {
         final MutableLiveData<ApiResponse> liveData = new MutableLiveData<>();
-        Call<List<Issue>> call = mApiService.getIssues(owner, repo);
+        Call<List<Issue>> call = apiService.getIssues(owner, repo);
         call.enqueue(new Callback<List<Issue>>() {
             @Override
             public void onResponse(Call<List<Issue>> call, Response<List<Issue>> response) {

@@ -16,26 +16,31 @@ import example.com.githubissues.repositories.IssueRepository;
 
 public class ListIssuesViewModel extends ViewModel {
 
-    private MediatorLiveData<ApiResponse> mApiResponse;
-    private IssueRepository mIssueRepository;
+    private MediatorLiveData<ApiResponse> apiResponse;
+    private IssueRepository issueRepository;
 
     @Inject
     public ListIssuesViewModel(IssueRepository issueRepositoryry) {
-        mApiResponse = new MediatorLiveData<>();
-        mIssueRepository = issueRepositoryry;
+        apiResponse = new MediatorLiveData<>();
+        issueRepository = issueRepositoryry;
     }
 
     @NonNull
     public LiveData<ApiResponse> getApiResponse() {
-        return mApiResponse;
+        return apiResponse;
     }
 
-    public LiveData<ApiResponse> loadIssues(@NonNull String user, String repo) {
-        mApiResponse.addSource(
-                mIssueRepository.getIssues(user, repo),
-                apiResponse -> mApiResponse.setValue(apiResponse)
+    public void loadIssues(@NonNull String user, String repo) {
+        LiveData<ApiResponse> issuesSource = issueRepository.getIssues(user, repo);
+        apiResponse.addSource(
+                issuesSource,
+                apiResponse -> {
+                    if (this.apiResponse.hasActiveObservers()) {
+                        this.apiResponse.removeSource(issuesSource);
+                    }
+                    this.apiResponse.setValue(apiResponse);
+                }
         );
-        return mApiResponse;
     }
 
 }

@@ -17,40 +17,40 @@ import example.com.githubissues.entities.Issue;
  */
 public class DataAdapter extends RecyclerView.Adapter<DataAdapter.Holder> {
 
-    private final LayoutInflater mInflator;
-    private List<Issue> mIssueList;
+    private final LayoutInflater inflator;
+    private List<Issue> issueList;
 
     public DataAdapter(LayoutInflater inflator) {
-        mInflator = inflator;
-        mIssueList = new ArrayList<>();
+        this.inflator = inflator;
+        issueList = new ArrayList<>();
     }
 
     @Override
     public Holder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new Holder(mInflator.inflate(R.layout.issue_row, parent, false));
+        return new Holder(inflator.inflate(R.layout.issue_row, parent, false));
     }
 
     @Override
     public void onBindViewHolder(Holder holder, int position) {
-        holder.mTextViewTitle.setText(mIssueList.get(position).getTitle());
-        String id = mIssueList.get(position).getNumber().toString();
+        holder.mTextViewTitle.setText(issueList.get(position).getTitle());
+        String id = issueList.get(position).getNumber().toString();
         holder.mTextViewId.setText(id);
-        holder.mTextViewCreator.setText(mIssueList.get(position).getUser().getLogin());
+        holder.mTextViewCreator.setText(issueList.get(position).getUser().getLogin());
     }
 
     @Override
     public int getItemCount() {
-        return mIssueList.size();
+        return issueList.size();
     }
 
     public void addIssues(List<Issue> issues) {
-        mIssueList.clear();
-        mIssueList.addAll(issues);
+        issueList.clear();
+        issueList.addAll(issues);
         notifyDataSetChanged();
     }
 
     public void clearIssues() {
-        mIssueList.clear();
+        issueList.clear();
         notifyDataSetChanged();
     }
 

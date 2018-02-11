@@ -2,7 +2,7 @@ package example.com.githubissues.ui;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.arch.lifecycle.LifecycleActivity;
+
 import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
@@ -37,30 +37,31 @@ public class MainActivity extends AppCompatActivity {
     ViewModelProvider.Factory mViewModelFactory;
 
     private final String TAG = MainActivity.class.getName();
-    private RecyclerView mRecyclerView;
-    private ProgressDialog mDialog;
-    private DataAdapter mAdapter;
-    private EditText mSearchEditText;
-    private ListIssuesViewModel mViewModel;
+    
+    private ProgressDialog progressDialog;
+    private DataAdapter dataAdapter;
+    private EditText searchEditText;
+    private ListIssuesViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         // Required by Dagger2 for field injection
         ((IssuesApplication) getApplication()).getAppComponent().inject(this);
-        mViewModel = ViewModelProviders.of(this, mViewModelFactory).get(ListIssuesViewModel.class);
+        viewModel = ViewModelProviders.of(this, mViewModelFactory).get(ListIssuesViewModel.class);
         setupView();
 
-        mSearchEditText.setOnEditorActionListener((TextView v, int actionId, KeyEvent event) -> {
+        searchEditText.setOnEditorActionListener((TextView v, int actionId, KeyEvent event) -> {
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                String repo = mSearchEditText.getText().toString();
+                String repo = searchEditText.getText().toString();
                 if (repo.length() > 0) {
                     String[] query = repo.split("/");
                     if (query.length == 2) {
                         hideSoftKeyboard(MainActivity.this, v);
                         setProgress(true);
-                        mViewModel.loadIssues(query[0], query[1]);
+                        viewModel.loadIssues(query[0], query[1]);
                     } else {
                         handleError(new Exception(
                                 "Error wrong format of input. Required format owner/repository_name")
@@ -77,7 +78,8 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Handle changes emitted by LiveData
-        mViewModel.getApiResponse().observe(this, apiResponse -> {
+        viewModel.getApiResponse().observe(this, apiResponse -> {
+            Log.d(TAG, "observe called()");
             if (apiResponse.getError() != null) {
                 handleError(apiResponse.getError());
             } else {
@@ -92,45 +94,47 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupView() {
-        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
-        mSearchEditText = (EditText) findViewById(R.id.et_search);
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        searchEditText = (EditText) findViewById(R.id.et_search);
 
         // Setup Progress Dialog to show loading state
-        mDialog = new ProgressDialog(MainActivity.this);
-        mDialog.setIndeterminate(true);
-        mDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        mDialog.setTitle(getString(R.string.progress_title));
-        mDialog.setMessage(getString(R.string.progress_body));
-        mDialog.setCancelable(false);
-        mDialog.setCanceledOnTouchOutside(false);
+        progressDialog = new ProgressDialog(MainActivity.this);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setTitle(getString(R.string.progress_title));
+        progressDialog.setMessage(getString(R.string.progress_body));
+        progressDialog.setCancelable(false);
+        progressDialog.setCanceledOnTouchOutside(false);
 
-        mRecyclerView.setRecycledViewPool(new RecyclerView.RecycledViewPool());
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(
+        recyclerView.setRecycledViewPool(new RecyclerView.RecycledViewPool());
+        recyclerView.setLayoutManager(new LinearLayoutManager(
                 this, LinearLayoutManager.VERTICAL, false)
         );
-        mRecyclerView.hasFixedSize();
-        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.hasFixedSize();
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
         DividerItemDecoration mDividerItemDecoration = new DividerItemDecoration(
-                mRecyclerView.getContext(), LinearLayoutManager.VERTICAL
+                recyclerView.getContext(), LinearLayoutManager.VERTICAL
         );
-        mRecyclerView.addItemDecoration(mDividerItemDecoration);
-        mAdapter = new DataAdapter(getLayoutInflater());
-        mRecyclerView.setAdapter(mAdapter);
+        recyclerView.addItemDecoration(mDividerItemDecoration);
+        dataAdapter = new DataAdapter(getLayoutInflater());
+        recyclerView.setAdapter(dataAdapter);
     }
 
     private void hideSoftKeyboard(Activity activity, View view) {
         InputMethodManager imm = (InputMethodManager) activity.getSystemService(
                 Context.INPUT_METHOD_SERVICE
         );
-        imm.hideSoftInputFromWindow(view.getApplicationWindowToken(), 0);
+        if (imm != null) {
+            imm.hideSoftInputFromWindow(view.getApplicationWindowToken(), 0);
+        }
     }
 
     private void handleResponse(List<Issue> issues) {
         setProgress(false);
         if (issues != null && issues.size() > 0) {
-            mAdapter.addIssues(issues);
+            dataAdapter.addIssues(issues);
         } else {
-            mAdapter.clearIssues();
+            dataAdapter.clearIssues();
             Toast.makeText(
                     this,
                     "No issues found for the searched repository.",
@@ -141,16 +145,16 @@ public class MainActivity extends AppCompatActivity {
 
     private void handleError(Throwable error) {
         setProgress(false);
-        mAdapter.clearIssues();
+        dataAdapter.clearIssues();
         Log.e(TAG, "error occured: " + error.toString());
         Toast.makeText(this, "Oops! Some error occured.", Toast.LENGTH_SHORT).show();
     }
 
     public void setProgress(boolean flag) {
         if (flag) {
-            mDialog.show();
+            progressDialog.show();
         } else {
-            mDialog.dismiss();
+            progressDialog.dismiss();
         }
     }
 
